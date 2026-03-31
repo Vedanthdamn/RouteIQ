@@ -1,0 +1,634 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import App from "./app";
+
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const [navScrolled, setNavScrolled] = useState(false);
+  const [statsRoutes, setStatsRoutes] = useState(0);
+  const [statsMs, setStatsMs] = useState(0);
+  const [statsGuarantee, setStatsGuarantee] = useState(0);
+  const [algorithmCounter, setAlgorithmCounter] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setNavScrolled(window.scrollY > 50);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const timeoutId = window.setTimeout(() => {
+      const revealElements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+
+      revealElements.forEach((element) => {
+        element.style.opacity = "0";
+        element.style.transform = "translateY(30px)";
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const element = entry.target as HTMLElement;
+
+            if (entry.isIntersecting) {
+              const parent = element.parentElement;
+              const indexInParent = parent ? Array.from(parent.children).indexOf(element) : 0;
+              const delay = Math.max(indexInParent, 0) * 100;
+
+              element.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
+              element.style.transitionDelay = `${delay}ms`;
+              element.style.opacity = "1";
+              element.style.transform = "translateY(0)";
+              return;
+            }
+
+            element.style.transition = "none";
+            element.style.transitionDelay = "0ms";
+            element.style.opacity = "0";
+            element.style.transform = "translateY(30px)";
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      revealElements.forEach((element) => observer.observe(element));
+
+      (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver = observer;
+    }, 100);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(timeoutId);
+
+      const observer = (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver;
+      if (observer) {
+        observer.disconnect();
+        delete (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      let frame = 0;
+      const totalFrames = 24;
+      const timer = window.setInterval(() => {
+        frame += 1;
+        const progress = Math.min(frame / totalFrames, 1);
+        setStatsRoutes(Math.round(24 * progress));
+        setStatsMs(Math.round(120 * progress));
+        setStatsGuarantee(Math.round(100 * progress));
+        setAlgorithmCounter(Math.round(24 * progress));
+
+        if (progress >= 1) {
+          window.clearInterval(timer);
+        }
+      }, 50);
+    }, 900);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  function goToApp() {
+    navigate("/app");
+  }
+
+  function scrollToId(id: string) {
+    const node = document.getElementById(id);
+    if (node) {
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  return (
+    <div className="rqlp-page" id="top">
+      <style>{`
+        * {
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .rqlp-page {
+          background: radial-gradient(circle at 15% 10%, rgba(124, 58, 237, 0.12), transparent 35%), #0a0a1a;
+          color: #ffffff;
+          width: 100%;
+          min-height: 100vh;
+          font-family: "Space Grotesk", "Inter", "Segoe UI", sans-serif;
+        }
+
+        .rqlp-nav {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 60;
+          width: 100%;
+          padding: 18px 32px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 1px solid transparent;
+          transition: background 220ms ease-out, border-color 220ms ease-out, backdrop-filter 220ms ease-out;
+        }
+
+        .rqlp-nav.is-scrolled {
+          background: rgba(10, 10, 26, 0.82);
+          border-bottom-color: rgba(148, 163, 184, 0.22);
+          backdrop-filter: blur(12px);
+        }
+
+        .rqlp-brand {
+          border: none;
+          background: transparent;
+          font-family: 'Space Grotesk', sans-serif;
+          color: #ffffff;
+          font-size: 36px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .rqlp-links {
+          display: flex;
+          align-items: center;
+          gap: 26px;
+        }
+
+        .rqlp-link {
+          border: none;
+          background: transparent;
+          color: #d1d5db;
+          font-size: 17px;
+          font-weight: 500;
+        }
+
+        .rqlp-link:hover {
+          color: #ffffff;
+        }
+
+        .rqlp-btn {
+          border: 1px solid transparent;
+          border-radius: 10px;
+          padding: 12px 24px;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .rqlp-btn-primary {
+          background: #7c3aed;
+          color: #ffffff;
+          box-shadow: 0 8px 26px rgba(124, 58, 237, 0.35);
+        }
+
+        .rqlp-btn-primary:hover {
+          background: #6d28d9;
+        }
+
+        .rqlp-btn-outline {
+          background: transparent;
+          color: #ffffff;
+          border-color: rgba(167, 139, 250, 0.65);
+        }
+
+        .rqlp-btn-outline:hover {
+          border-color: #7c3aed;
+          color: #ddd6fe;
+        }
+
+        .rqlp-section {
+          width: 100%;
+          padding: 112px 32px 46px;
+        }
+
+        .rqlp-section-inner {
+          width: min(1220px, 100%);
+          margin: 0 auto;
+        }
+
+        .rqlp-hero {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 16px;
+          padding-top: 56px;
+        }
+
+        .rqlp-kicker {
+          font-size: 14px;
+          color: #c4b5fd;
+          text-transform: uppercase;
+          letter-spacing: 0.13em;
+          font-weight: 500;
+        }
+
+        .rqlp-title {
+          font-size: clamp(52px, 9vw, 104px);
+          line-height: 0.98;
+          letter-spacing: -0.04em;
+          font-weight: 700;
+          max-width: 920px;
+        }
+
+        .rqlp-subtext {
+          max-width: 850px;
+          color: #cbd5e1;
+          font-size: clamp(20px, 2.2vw, 30px);
+          line-height: 1.45;
+          font-weight: 400;
+        }
+
+        .rqlp-actions {
+          margin-top: 8px;
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .rqlp-browser {
+          margin-top: 24px;
+          border: 1px solid rgba(124, 58, 237, 0.34);
+          border-radius: 18px;
+          overflow: hidden;
+          background: #0f172a;
+        }
+
+        .rqlp-browser-top {
+          height: 36px;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 16px;
+          background: #111827;
+        }
+
+        .rqlp-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 999px;
+          display: inline-block;
+        }
+
+        .rqlp-dot.red { background: #ef4444; }
+        .rqlp-dot.yellow { background: #f59e0b; }
+        .rqlp-dot.green { background: #22c55e; }
+
+        .rqlp-browser-view {
+          height: 500px;
+          background: #0f172a;
+        }
+
+        .rqlp-stats {
+          padding-top: 16px;
+        }
+
+        .rqlp-stats-grid {
+          border: 1px solid rgba(124, 58, 237, 0.26);
+          border-radius: 14px;
+          background: rgba(15, 23, 42, 0.66);
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          padding: 14px;
+        }
+
+        .rqlp-stat {
+          border: 1px solid rgba(167, 139, 250, 0.28);
+          border-radius: 12px;
+          padding: 20px 12px;
+          text-align: center;
+          background: rgba(17, 24, 39, 0.84);
+        }
+
+        .rqlp-stat-value {
+          display: block;
+          font-size: clamp(36px, 5vw, 56px);
+          font-weight: 700;
+          color: #f5f3ff;
+          line-height: 1;
+        }
+
+        .rqlp-stat-label {
+          margin-top: 8px;
+          color: #cbd5e1;
+          font-size: clamp(16px, 1.8vw, 24px);
+          line-height: 1.35;
+          font-weight: 400;
+        }
+
+        .rqlp-section-title {
+          font-size: clamp(38px, 5vw, 64px);
+          line-height: 1.08;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+        }
+
+        .rqlp-section-sub {
+          margin-top: 12px;
+          max-width: 900px;
+          font-size: clamp(19px, 2vw, 28px);
+          line-height: 1.5;
+          font-weight: 400;
+          color: #cbd5e1;
+        }
+
+        .rqlp-cards {
+          margin-top: 24px;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .rqlp-card {
+          border: 1px solid rgba(124, 58, 237, 0.32);
+          border-radius: 14px;
+          background: rgba(15, 23, 42, 0.84);
+          padding: 22px;
+        }
+
+        .rqlp-card h3 {
+          font-size: clamp(22px, 2.3vw, 32px);
+          line-height: 1.2;
+          font-weight: 500;
+        }
+
+        .rqlp-card p {
+          margin-top: 10px;
+          color: #cbd5e1;
+          line-height: 1.55;
+          font-size: clamp(16px, 1.6vw, 22px);
+          font-weight: 400;
+        }
+
+        .rqlp-algo-grid {
+          margin-top: 26px;
+          border: 1px solid rgba(124, 58, 237, 0.32);
+          border-radius: 16px;
+          background: rgba(15, 23, 42, 0.76);
+          padding: 22px;
+          display: grid;
+          grid-template-columns: 300px 1fr;
+          gap: 18px;
+          align-items: center;
+        }
+
+        .rqlp-factorial {
+          font-size: clamp(54px, 8vw, 110px);
+          font-weight: 700;
+          color: #ddd6fe;
+          line-height: 1;
+          letter-spacing: -0.04em;
+        }
+
+        .rqlp-factorial-copy {
+          color: #cbd5e1;
+          font-size: clamp(18px, 2vw, 26px);
+          line-height: 1.55;
+          font-weight: 400;
+        }
+
+        .rqlp-demo-copy {
+          margin-top: 16px;
+        }
+
+        .rqlp-laptop {
+          margin-top: 20px;
+        }
+
+        .rqlp-laptop-screen {
+          border: 1px solid rgba(124, 58, 237, 0.34);
+          border-radius: 16px;
+          overflow: hidden;
+          background: #0f172a;
+        }
+
+        .rqlp-laptop-view {
+          height: 480px;
+          background: #0f172a;
+        }
+
+        .rqlp-laptop-base {
+          width: min(90%, 980px);
+          height: 14px;
+          margin: 0 auto;
+          border-radius: 0 0 12px 12px;
+          background: #374151;
+        }
+
+        .rqlp-closing {
+          margin-top: 20px;
+          border: 1px solid rgba(124, 58, 237, 0.34);
+          border-radius: 18px;
+          background: rgba(17, 24, 39, 0.84);
+          padding: 46px 28px;
+          text-align: center;
+        }
+
+        .rqlp-closing h2 {
+          font-size: clamp(40px, 6vw, 80px);
+          line-height: 1.05;
+          font-weight: 700;
+        }
+
+        .rqlp-closing p {
+          margin: 14px auto 0;
+          max-width: 900px;
+          color: #cbd5e1;
+          font-size: clamp(18px, 2vw, 30px);
+          line-height: 1.45;
+          font-weight: 400;
+        }
+
+        .rqlp-footer {
+          width: 100%;
+          border-top: 1px solid rgba(148, 163, 184, 0.22);
+          padding: 20px 32px 28px;
+          color: #94a3b8;
+          font-size: clamp(16px, 1.4vw, 20px);
+          font-weight: 400;
+        }
+
+        @media (max-width: 1100px) {
+          .rqlp-nav {
+            padding: 16px 20px;
+          }
+
+          .rqlp-links {
+            gap: 16px;
+          }
+
+          .rqlp-section {
+            padding: 104px 18px 34px;
+          }
+
+          .rqlp-stats-grid,
+          .rqlp-cards {
+            grid-template-columns: 1fr;
+          }
+
+          .rqlp-algo-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 760px) {
+          .rqlp-nav {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+          }
+
+          .rqlp-brand {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .rqlp-links {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .rqlp-browser-view,
+          .rqlp-laptop-view {
+            height: 360px;
+          }
+        }
+      `}</style>
+
+      <header className={`rqlp-nav${navScrolled ? " is-scrolled" : ""}`}>
+        <button className="rqlp-brand reveal" onClick={() => scrollToId("top")}>Route IQ</button>
+        <nav className="rqlp-links">
+          <button className="rqlp-link reveal" onClick={() => scrollToId("how-it-works")}>How it works</button>
+          <button className="rqlp-link reveal" onClick={() => scrollToId("algorithm")}>Algorithm</button>
+          <button className="rqlp-link reveal" onClick={() => scrollToId("demo")}>Demo</button>
+        </nav>
+        <button className="rqlp-btn rqlp-btn-primary reveal" onClick={goToApp}>Launch App</button>
+      </header>
+
+      <main>
+        <section className="rqlp-section">
+          <div className="rqlp-section-inner rqlp-hero">
+            <p className="rqlp-kicker reveal">TSP Route Optimization Engine</p>
+            <h1 className="rqlp-title reveal">Deliver smarter. Not harder.</h1>
+            <p className="rqlp-subtext reveal">
+              RouteIQ finds the mathematically shortest delivery route across all your stops. Real roads.
+              Real time. Zero guesswork.
+            </p>
+            <div className="rqlp-actions">
+              <button className="rqlp-btn rqlp-btn-primary reveal" onClick={goToApp}>Start Optimizing</button>
+              <button className="rqlp-btn rqlp-btn-outline reveal" onClick={goToApp}>See how it works</button>
+            </div>
+            <div className="rqlp-browser reveal">
+              <div className="rqlp-browser-top">
+                <span className="rqlp-dot red" />
+                <span className="rqlp-dot yellow" />
+                <span className="rqlp-dot green" />
+              </div>
+              <div className="rqlp-browser-view">
+                <App />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rqlp-section rqlp-stats">
+          <div className="rqlp-section-inner rqlp-stats-grid">
+            <article className="rqlp-stat reveal">
+              <span className="rqlp-stat-value">{statsRoutes}!</span>
+              <span className="rqlp-stat-label">Maximum permutations tested</span>
+            </article>
+            <article className="rqlp-stat reveal">
+              <span className="rqlp-stat-value">&lt;{statsMs}ms</span>
+              <span className="rqlp-stat-label">Time to find optimal route</span>
+            </article>
+            <article className="rqlp-stat reveal">
+              <span className="rqlp-stat-value">{statsGuarantee}%</span>
+              <span className="rqlp-stat-label">Mathematically guaranteed</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="rqlp-section">
+          <div className="rqlp-section-inner">
+            <h2 className="rqlp-section-title reveal">How it works</h2>
+            <div className="rqlp-cards">
+              <article className="rqlp-card reveal">
+                <h3>Search any location</h3>
+                <p>Find hubs and stops instantly with autocomplete across real map data.</p>
+              </article>
+              <article className="rqlp-card reveal">
+                <h3>AI tests every route</h3>
+                <p>Brute force evaluates each permutation, then selects the shortest possible path.</p>
+              </article>
+              <article className="rqlp-card reveal">
+                <h3>Drive the optimal path</h3>
+                <p>See the winning route drawn on real roads and compare it against worse alternatives.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="algorithm" className="rqlp-section">
+          <div className="rqlp-section-inner">
+            <h2 className="rqlp-section-title reveal">Why brute force wins at this scale</h2>
+            <p className="rqlp-section-sub reveal">
+              With 4 stops there are exactly 4! = 24 possible permutations. That search space is small enough
+              for RouteIQ to evaluate every route in full.
+            </p>
+            <p className="rqlp-section-sub reveal">
+              We test every single one. No heuristic, no approximation. The answer you get is provably the
+              shortest route that exists.
+            </p>
+            <div className="rqlp-algo-grid reveal">
+              <span className="rqlp-factorial">4! = {algorithmCounter}</span>
+              <p className="rqlp-factorial-copy">
+                Exhaustive enumeration guarantees correctness: compute all 24, compare totals, pick minimum.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="demo" className="rqlp-section rqlp-live-demo">
+          <div className="rqlp-section-inner">
+            <h2 className="rqlp-section-title reveal">See it solve a real route</h2>
+            <p className="rqlp-section-sub rqlp-demo-copy reveal">
+              Try it yourself. Add any locations in Delhi, Mumbai or Chennai and watch RouteIQ trace the
+              perfect path in real time.
+            </p>
+            <div className="rqlp-laptop reveal">
+              <div className="rqlp-laptop-screen">
+                <div className="rqlp-browser-top">
+                  <span className="rqlp-dot red" />
+                  <span className="rqlp-dot yellow" />
+                  <span className="rqlp-dot green" />
+                </div>
+                <div className="rqlp-laptop-view">
+                  <App />
+                </div>
+              </div>
+              <div className="rqlp-laptop-base" />
+            </div>
+          </div>
+        </section>
+
+        <section className="rqlp-section">
+          <div className="rqlp-section-inner rqlp-closing">
+            <h2 className="reveal">Stop guessing. Start optimizing.</h2>
+            <p className="reveal">Built for delivery teams who believe every route can be better than the last.</p>
+            <button className="rqlp-btn rqlp-btn-primary reveal" onClick={goToApp}>Launch RouteIQ -&gt;</button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="rqlp-footer reveal">
+        Built with FastAPI, React, MapLibre GL JS, OpenFreeMap, OpenRouteService
+      </footer>
+    </div>
+  );
+}
