@@ -1,14 +1,19 @@
 import { middleOfUSA } from "./constants";
 
-const renderApiUrl = "https://routeiq.onrender.com";
 const rawConfiguredApiUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/$/, "");
 const runningOnLocalhost =
   typeof window !== "undefined"
   && ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const defaultApiBaseUrl = runningOnLocalhost ? "http://localhost:8000" : "/api";
 
 const configuredApiUrl = (() => {
   if (!rawConfiguredApiUrl) {
-    return "";
+    return defaultApiBaseUrl;
+  }
+
+  // Keep relative paths like /api untouched.
+  if (rawConfiguredApiUrl.startsWith("/")) {
+    return rawConfiguredApiUrl;
   }
 
   // If protocol is missing, infer one so fetch receives a valid absolute URL.
@@ -25,8 +30,8 @@ const configuredPointsToLocalhost = /^(http|https):\/\/(localhost|127\.0\.0\.1)(
 const configuredUsesHttp = configuredApiUrl.startsWith("http://");
 
 const apiBaseUrl = !runningOnLocalhost && (configuredPointsToLocalhost || configuredUsesHttp)
-  ? renderApiUrl
-  : (configuredApiUrl || renderApiUrl);
+  ? "/api"
+  : configuredApiUrl;
 
 // ── IP geolocation (existing) ──────────────────────────────────────────────
 

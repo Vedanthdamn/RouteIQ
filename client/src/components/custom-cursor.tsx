@@ -24,8 +24,8 @@ export default function CustomCursor({ color }: CustomCursorProps) {
       return (
         typeof window !== "undefined" &&
         (window.matchMedia("(pointer: coarse)").matches ||
-          navigator.maxTouchPoints > 0 ||
-          navigator.msMaxTouchPoints > 0 ||
+              navigator.maxTouchPoints > 0 ||
+              ((navigator as Navigator & { msMaxTouchPoints?: number }).msMaxTouchPoints ?? 0) > 0 ||
           "ontouchstart" in window)
       );
     };

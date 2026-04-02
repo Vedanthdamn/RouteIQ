@@ -1,10 +1,11 @@
 {
   "buildCommand": "cd client && npm run build",
   "outputDirectory": "client/dist",
-  "env": {
-    "VITE_API_URL": "@vite-api-url"
-  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://routeiq.onrender.com/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -49,13 +50,6 @@
           "value": "strict-origin-when-cross-origin"
         }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/app",
-      "destination": "/",
-      "permanent": false
     }
   ]
 }
