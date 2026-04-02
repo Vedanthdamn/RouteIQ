@@ -1,6 +1,6 @@
 import { middleOfUSA } from "./constants";
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const apiBaseUrl = (import.meta.env.VITE_API_URL || "https://routeiq.onrender.com").replace(/\/$/, "");
 
 // ── IP geolocation (existing) ──────────────────────────────────────────────
 
