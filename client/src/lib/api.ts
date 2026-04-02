@@ -1,14 +1,30 @@
 import { middleOfUSA } from "./constants";
 
 const renderApiUrl = "https://routeiq.onrender.com";
-const configuredApiUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/$/, "");
+const rawConfiguredApiUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/$/, "");
 const runningOnLocalhost =
   typeof window !== "undefined"
   && ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const configuredPointsToLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredApiUrl);
+
+const configuredApiUrl = (() => {
+  if (!rawConfiguredApiUrl) {
+    return "";
+  }
+
+  // If protocol is missing, infer one so fetch receives a valid absolute URL.
+  const hasProtocol = /^[a-z]+:\/\//i.test(rawConfiguredApiUrl);
+  if (!hasProtocol) {
+    const looksLocal = /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(rawConfiguredApiUrl);
+    return `${looksLocal ? "http" : "https"}://${rawConfiguredApiUrl}`;
+  }
+
+  return rawConfiguredApiUrl;
+})();
+
+const configuredPointsToLocalhost = /^(http|https):\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredApiUrl);
 const configuredUsesHttp = configuredApiUrl.startsWith("http://");
 
-const apiBaseUrl = (!runningOnLocalhost && (configuredPointsToLocalhost || configuredUsesHttp))
+const apiBaseUrl = !runningOnLocalhost && (configuredPointsToLocalhost || configuredUsesHttp)
   ? renderApiUrl
   : (configuredApiUrl || renderApiUrl);
 
