@@ -1,6 +1,16 @@
 import { middleOfUSA } from "./constants";
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || "https://routeiq.onrender.com").replace(/\/$/, "");
+const renderApiUrl = "https://routeiq.onrender.com";
+const configuredApiUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/$/, "");
+const runningOnLocalhost =
+  typeof window !== "undefined"
+  && ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const configuredPointsToLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredApiUrl);
+const configuredUsesHttp = configuredApiUrl.startsWith("http://");
+
+const apiBaseUrl = (!runningOnLocalhost && (configuredPointsToLocalhost || configuredUsesHttp))
+  ? renderApiUrl
+  : (configuredApiUrl || renderApiUrl);
 
 // ── IP geolocation (existing) ──────────────────────────────────────────────
 
