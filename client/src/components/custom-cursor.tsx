@@ -13,9 +13,32 @@ export default function CustomCursor({ color }: CustomCursorProps) {
   const [isTextMode, setIsTextMode] = useState(false);
   const [isHoverTarget, setIsHoverTarget] = useState(false);
   const [textHeight, setTextHeight] = useState(16);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const targetRef = useRef({ x: 0, y: 0 });
   const currentRef = useRef({ x: 0, y: 0 });
   const cursorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Detect if device supports touch
+    const touchSupported = () => {
+      return (
+        typeof window !== "undefined" &&
+        (window.matchMedia("(pointer: coarse)").matches ||
+          navigator.maxTouchPoints > 0 ||
+          navigator.msMaxTouchPoints > 0 ||
+          "ontouchstart" in window)
+      );
+    };
+
+    if (touchSupported()) {
+      setIsTouchDevice(true);
+      // Hide default cursor on touch devices
+      if (document.documentElement) {
+        document.documentElement.style.cursor = "auto";
+      }
+      return;
+    }
+  }, []);
 
   const spawnRipple = (x: number, y: number, rippleColor: string) => {
     const ripple = document.createElement("div");
@@ -60,6 +83,8 @@ export default function CustomCursor({ color }: CustomCursorProps) {
   };
 
   useEffect(() => {
+    if (isTouchDevice) return;
+
     let frameId = 0;
 
     const animate = () => {
@@ -138,9 +163,9 @@ export default function CustomCursor({ color }: CustomCursorProps) {
       window.removeEventListener("mouseenter", onMouseEnter);
       window.removeEventListener("click", onClick);
     };
-  }, [visible]);
+  }, [visible, isTouchDevice]);
 
-  return (
+  return isTouchDevice ? null : (
     <div
       ref={cursorRef}
       className={`circle-cursor${isTextMode ? " is-text" : ""}${isHoverTarget ? " is-hover-target" : ""}${visible ? " is-visible" : ""}`}

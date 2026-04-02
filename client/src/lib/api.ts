@@ -1,5 +1,7 @@
 import { middleOfUSA } from "./constants";
 
+const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
 // ── IP geolocation (existing) ──────────────────────────────────────────────
 
 export interface LocationResponse {
@@ -163,7 +165,7 @@ interface RouteLegsResponse {
 }
 
 export async function optimizeRoute(locations: LocationInput[]): Promise<OptimizeResponse> {
-  const response = await fetch("http://localhost:8000/optimize", {
+  const response = await fetch(`${apiBaseUrl}/optimize`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ locations }),
@@ -182,7 +184,7 @@ export async function optimizeRoute(locations: LocationInput[]): Promise<Optimiz
 }
 
 export async function fetchRouteLegGeometries(route: RouteStop[]): Promise<RouteLegGeometry[]> {
-  const response = await fetch("http://localhost:8000/route-legs", {
+  const response = await fetch(`${apiBaseUrl}/route-legs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ route }),

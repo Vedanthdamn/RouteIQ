@@ -13,6 +13,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {
     if (result || isGeocoding || locations.length >= 5) return false;
@@ -70,6 +71,8 @@ export default function App() {
         onAddLocation={handleAddLocation}
         onOptimize={handleOptimize}
         onReset={handleReset}
+        isMobileExpanded={isMobileSidebarExpanded}
+        onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
       />
 
       <div className="map-wrapper">

@@ -116,6 +116,10 @@ def get_leg_geometry_ors(start: Location, end: Location) -> List[List[float]]:
 # Routes
 # ---------------------------------------------------------------------------
 
+@app.get("/")
+def root():
+    return {"status": "RouteIQ backend running"}
+
 @app.get("/health")
 def health():
     return {

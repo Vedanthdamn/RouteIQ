@@ -80,6 +80,8 @@ interface Props {
   onAddLocation: (place: PlaceSuggestion) => Promise<boolean>;
   onOptimize: () => void;
   onReset: () => void;
+  isMobileExpanded: boolean;
+  onMobileToggle: (expanded: boolean) => void;
 }
 
 const LEGEND_ITEMS = [
@@ -99,6 +101,8 @@ export default function Sidebar({
   onAddLocation,
   onOptimize,
   onReset,
+  isMobileExpanded,
+  onMobileToggle,
 }: Props) {
   const [matrixVisible, setMatrixVisible] = useState(false);
   const [placeName, setPlaceName] = useState("");
@@ -191,6 +195,48 @@ export default function Sidebar({
     };
   }, [placeName, atMax, selectedSuggestion]);
 
+  useEffect(() => {
+    const sidebarNode = document.querySelector<HTMLElement>(".sidebar");
+    if (!sidebarNode) return;
+
+    let startY = 0;
+    let currentY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      currentY = e.touches[0].clientY - startY;
+    };
+
+    const handleTouchEnd = () => {
+      const threshold = 50;
+      if (currentY > threshold) {
+        // Dragged down, collapse
+        onMobileToggle(false);
+      } else if (currentY < -threshold) {
+        // Dragged up, expand
+        onMobileToggle(true);
+      }
+      startY = 0;
+      currentY = 0;
+    };
+
+    const header = sidebarNode.querySelector<HTMLElement>(".sidebar-header");
+    if (header && window.innerWidth <= 768) {
+      header.addEventListener("touchstart", handleTouchStart, { passive: true });
+      header.addEventListener("touchmove", handleTouchMove, { passive: true });
+      header.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+      return () => {
+        header.removeEventListener("touchstart", handleTouchStart);
+        header.removeEventListener("touchmove", handleTouchMove);
+        header.removeEventListener("touchend", handleTouchEnd);
+      };
+    }
+  }, [onMobileToggle]);
+
   function handleSelectSuggestion(suggestion: PlaceSuggestion) {
     setSelectedSuggestion(suggestion);
     setPlaceName(suggestion.displayName);
@@ -211,8 +257,8 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
+    <aside className={`sidebar${isMobileExpanded ? " is-expanded" : ""}`}>
+      <div className="sidebar-header" onClick={() => window.innerWidth <= 768 && onMobileToggle(!isMobileExpanded)}>
         <div className="header-logo">
           <span className="header-icon">🚚</span>
           <div>

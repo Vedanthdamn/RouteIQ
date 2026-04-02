@@ -5,6 +5,7 @@ import App from "./app";
 export default function LandingPage() {
   const navigate = useNavigate();
   const [navScrolled, setNavScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [statsRoutes, setStatsRoutes] = useState(0);
   const [statsMs, setStatsMs] = useState(0);
   const [statsGuarantee, setStatsGuarantee] = useState(0);
@@ -454,6 +455,62 @@ export default function LandingPage() {
           font-weight: 400;
         }
 
+        .rqlp-menu-toggle {
+          display: none;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          font-size: 24px;
+          cursor: pointer;
+          padding: 8px;
+          z-index: 65;
+        }
+
+        .rqlp-menu-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          z-index: 61;
+          backdrop-filter: blur(8px);
+        }
+
+        .rqlp-menu-overlay.is-open {
+          display: flex;
+        }
+
+        .rqlp-mobile-menu {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 62;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 32px;
+          padding: 80px 20px 20px;
+        }
+
+        .rqlp-mobile-menu-item {
+          border: none;
+          background: transparent;
+          color: #ffffff;
+          font-size: 28px;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 10px;
+        }
+
+        .rqlp-mobile-menu-item:active {
+          opacity: 0.7;
+        }
+
         @media (max-width: 1100px) {
           .rqlp-nav {
             padding: 16px 20px;
@@ -477,26 +534,293 @@ export default function LandingPage() {
           }
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 768px) {
           .rqlp-nav {
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            padding: 14px 16px;
+            gap: 0;
+          }
+
+          .rqlp-menu-toggle {
+            display: block;
           }
 
           .rqlp-brand {
-            width: 100%;
-            justify-content: center;
+            flex: 1;
+            font-size: 28px;
           }
 
           .rqlp-links {
+            display: none;
+          }
+
+          .rqlp-nav .rqlp-btn {
+            display: none;
+          }
+
+          .rqlp-section {
+            padding: 96px 16px 32px;
+          }
+
+          .rqlp-hero {
+            padding-top: 48px;
+            gap: 12px;
+            min-height: auto;
+          }
+
+          .rqlp-title {
+            font-size: clamp(32px, 8vw, 52px);
+          }
+
+          .rqlp-subtext {
+            font-size: clamp(16px, 4vw, 20px);
+          }
+
+          .rqlp-actions {
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 6px;
+          }
+
+          .rqlp-btn {
             width: 100%;
-            justify-content: center;
+            padding: 14px 20px;
+            font-size: 14px;
           }
 
           .rqlp-browser-view,
           .rqlp-laptop-view {
-            height: 360px;
+            height: 300px;
+          }
+
+          .rqlp-browser {
+            margin-top: 20px;
+            border-radius: 12px;
+          }
+
+          .rqlp-stats-grid,
+          .rqlp-cards {
+            grid-template-columns: 1fr;
+            gap: 10px;
+            padding: 10px;
+          }
+
+          .rqlp-stat {
+            padding: 16px 12px;
+          }
+
+          .rqlp-stat-value {
+            font-size: clamp(28px, 6vw, 36px);
+          }
+
+          .rqlp-stat-label {
+            font-size: clamp(12px, 3vw, 14px);
+            margin-top: 6px;
+          }
+
+          .rqlp-section-title {
+            font-size: clamp(28px, 7vw, 38px);
+          }
+
+          .rqlp-section-sub {
+            font-size: clamp(14px, 3.5vw, 18px);
+            margin-top: 8px;
+          }
+
+          .rqlp-card {
+            padding: 18px;
+          }
+
+          .rqlp-card h3 {
+            font-size: clamp(18px, 4vw, 22px);
+          }
+
+          .rqlp-card p {
+            font-size: clamp(14px, 3vw, 16px);
+            margin-top: 8px;
+          }
+
+          .rqlp-algo-grid {
+            padding: 18px;
+            gap: 12px;
+          }
+
+          .rqlp-factorial {
+            font-size: clamp(42px, 10vw, 54px);
+          }
+
+          .rqlp-factorial-copy {
+            font-size: clamp(14px, 3vw, 18px);
+          }
+
+          .rqlp-laptop {
+            margin-top: 16px;
+          }
+
+          .rqlp-laptop-base {
+            height: 12px;
+          }
+
+          .rqlp-closing {
+            padding: 32px 20px;
+          }
+
+          .rqlp-closing h2 {
+            font-size: clamp(28px, 7vw, 40px);
+          }
+
+          .rqlp-closing p {
+            font-size: clamp(14px, 3.5vw, 18px);
+            margin-top: 10px;
+          }
+
+          .rqlp-footer {
+            padding: 16px 20px 20px;
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .rqlp-nav {
+            padding: 12px 12px;
+          }
+
+          .rqlp-brand {
+            font-size: 24px;
+          }
+
+          .rqlp-menu-toggle {
+            font-size: 20px;
+            padding: 6px;
+          }
+
+          .rqlp-section {
+            padding: 80px 12px 24px;
+          }
+
+          .rqlp-hero {
+            padding-top: 40px;
+            min-height: auto;
+          }
+
+          .rqlp-title {
+            font-size: clamp(28px, 7.5vw, 36px);
+            line-height: 1;
+          }
+
+          .rqlp-subtext {
+            font-size: clamp(14px, 3.5vw, 16px);
+          }
+
+          .rqlp-actions {
+            margin-top: 12px;
+          }
+
+          .rqlp-btn {
+            padding: 12px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+          }
+
+          .rqlp-browser {
+            margin-top: 16px;
+          }
+
+          .rqlp-browser-view {
+            height: 280px;
+          }
+
+          .rqlp-browser-top {
+            height: 32px;
+            padding: 0 12px;
+            gap: 6px;
+          }
+
+          .rqlp-dot {
+            width: 7px;
+            height: 7px;
+          }
+
+          .rqlp-stats-grid {
+            padding: 8px;
+            gap: 8px;
+          }
+
+          .rqlp-stat {
+            padding: 14px 10px;
+            border-radius: 10px;
+          }
+
+          .rqlp-stat-value {
+            font-size: clamp(24px, 5vw, 28px);
+          }
+
+          .rqlp-stat-label {
+            font-size: 11px;
+            margin-top: 4px;
+          }
+
+          .rqlp-section-title {
+            font-size: clamp(24px, 6vw, 32px);
+          }
+
+          .rqlp-section-sub {
+            font-size: clamp(13px, 3vw, 15px);
+          }
+
+          .rqlp-cards {
+            gap: 8px;
+            padding: 8px;
+          }
+
+          .rqlp-card {
+            padding: 16px;
+            border-radius: 12px;
+          }
+
+          .rqlp-card h3 {
+            font-size: clamp(16px, 3.5vw, 18px);
+          }
+
+          .rqlp-card p {
+            font-size: clamp(13px, 2.5vw, 14px);
+            margin-top: 6px;
+          }
+
+          .rqlp-algo-grid {
+            padding: 16px;
+            gap: 10px;
+            border-radius: 12px;
+          }
+
+          .rqlp-factorial {
+            font-size: clamp(36px, 9vw, 42px);
+          }
+
+          .rqlp-factorial-copy {
+            font-size: clamp(13px, 2.8vw, 15px);
+          }
+
+          .rqlp-laptop-view {
+            height: 260px;
+          }
+
+          .rqlp-closing {
+            padding: 28px 16px;
+            border-radius: 14px;
+          }
+
+          .rqlp-closing h2 {
+            font-size: clamp(24px, 6vw, 32px);
+          }
+
+          .rqlp-closing p {
+            font-size: clamp(13px, 3vw, 16px);
+            margin-top: 8px;
+          }
+
+          .rqlp-footer {
+            padding: 14px 16px 18px;
+            font-size: 11px;
           }
         }
       `}</style>
@@ -509,7 +833,42 @@ export default function LandingPage() {
           <button className="rqlp-link reveal" onClick={() => scrollToId("demo")}>Demo</button>
         </nav>
         <button className="rqlp-btn rqlp-btn-primary reveal" onClick={goToApp}>Launch App</button>
+        <button className="rqlp-menu-toggle reveal" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? "✕" : "☰"}
+        </button>
       </header>
+
+      {mobileMenuOpen && (
+        <>
+          <div className={`rqlp-menu-overlay${mobileMenuOpen ? " is-open" : ""}`} onClick={() => setMobileMenuOpen(false)} />
+          <div className="rqlp-mobile-menu">
+            <button 
+              className="rqlp-mobile-menu-item" 
+              onClick={() => { scrollToId("how-it-works"); setMobileMenuOpen(false); }}
+            >
+              How it works
+            </button>
+            <button 
+              className="rqlp-mobile-menu-item" 
+              onClick={() => { scrollToId("algorithm"); setMobileMenuOpen(false); }}
+            >
+              Algorithm
+            </button>
+            <button 
+              className="rqlp-mobile-menu-item" 
+              onClick={() => { scrollToId("demo"); setMobileMenuOpen(false); }}
+            >
+              Demo
+            </button>
+            <button 
+              className="rqlp-btn rqlp-btn-primary" 
+              onClick={() => { goToApp(); setMobileMenuOpen(false); }}
+            >
+              Launch App
+            </button>
+          </div>
+        </>
+      )}
 
       <main>
         <section className="rqlp-section">
