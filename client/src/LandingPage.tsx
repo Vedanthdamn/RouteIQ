@@ -1,6 +1,33 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import App from "./app";
+
+function DemoPreview({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`rqlp-preview${compact ? " is-compact" : ""}`}>
+      <div className="rqlp-preview-sidebar">
+        <div className="rqlp-preview-brand">RouteIQ</div>
+        <div className="rqlp-preview-panel">
+          <p>Add location</p>
+          <span>Hub + 4 stops</span>
+        </div>
+        <div className="rqlp-preview-panel">
+          <p>Optimized route</p>
+          <span>42.6 min total</span>
+        </div>
+      </div>
+      <div className="rqlp-preview-map">
+        <div className="rqlp-preview-pin is-hub" style={{ left: "16%", top: "62%" }}>H</div>
+        <div className="rqlp-preview-pin" style={{ left: "36%", top: "38%" }}>1</div>
+        <div className="rqlp-preview-pin" style={{ left: "58%", top: "52%" }}>2</div>
+        <div className="rqlp-preview-pin" style={{ left: "74%", top: "32%" }}>3</div>
+        <div className="rqlp-preview-pin" style={{ left: "82%", top: "66%" }}>4</div>
+        <svg className="rqlp-preview-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M16 62 L36 38 L58 52 L74 32 L82 66 L16 62" />
+        </svg>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -113,6 +140,7 @@ export default function LandingPage() {
           color: #ffffff;
           width: 100%;
           min-height: 100vh;
+          overflow-x: hidden;
           font-family: "Space Grotesk", "Inter", "Segoe UI", sans-serif;
         }
 
@@ -208,6 +236,7 @@ export default function LandingPage() {
 
         .rqlp-section-inner {
           width: min(1220px, 100%);
+          max-width: 100%;
           margin: 0 auto;
         }
 
@@ -257,6 +286,7 @@ export default function LandingPage() {
           border-radius: 18px;
           overflow: hidden;
           background: #0f172a;
+          width: 100%;
         }
 
         .rqlp-browser-top {
@@ -283,6 +313,97 @@ export default function LandingPage() {
         .rqlp-browser-view {
           height: 500px;
           background: #0f172a;
+        }
+
+        .rqlp-preview {
+          height: 100%;
+          width: 100%;
+          display: grid;
+          grid-template-columns: minmax(170px, 28%) 1fr;
+          background: linear-gradient(150deg, #0b1023 0%, #0f172a 100%);
+        }
+
+        .rqlp-preview-sidebar {
+          border-right: 1px solid rgba(148, 163, 184, 0.22);
+          background: rgba(2, 6, 23, 0.84);
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .rqlp-preview-brand {
+          font-size: 18px;
+          font-weight: 700;
+          color: #f5f3ff;
+          letter-spacing: -0.01em;
+        }
+
+        .rqlp-preview-panel {
+          border: 1px solid rgba(148, 163, 184, 0.28);
+          border-radius: 10px;
+          background: rgba(15, 23, 42, 0.7);
+          padding: 10px;
+        }
+
+        .rqlp-preview-panel p {
+          margin: 0;
+          font-size: 12px;
+          color: #e2e8f0;
+          font-weight: 600;
+        }
+
+        .rqlp-preview-panel span {
+          margin-top: 4px;
+          display: block;
+          font-size: 11px;
+          color: #94a3b8;
+        }
+
+        .rqlp-preview-map {
+          position: relative;
+          overflow: hidden;
+          background:
+            radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.2), transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba(56, 189, 248, 0.16), transparent 36%),
+            linear-gradient(135deg, #111827 0%, #0f172a 100%);
+        }
+
+        .rqlp-preview-route {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        .rqlp-preview-route path {
+          fill: none;
+          stroke: #22d3ee;
+          stroke-width: 1.2;
+          stroke-linejoin: round;
+          stroke-linecap: round;
+          stroke-dasharray: 1.8 1.8;
+        }
+
+        .rqlp-preview-pin {
+          position: absolute;
+          width: 24px;
+          height: 24px;
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.24);
+          background: rgba(59, 130, 246, 0.82);
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+        }
+
+        .rqlp-preview-pin.is-hub {
+          background: rgba(249, 115, 22, 0.88);
         }
 
         .rqlp-stats {
@@ -407,6 +528,7 @@ export default function LandingPage() {
           border-radius: 16px;
           overflow: hidden;
           background: #0f172a;
+          width: 100%;
         }
 
         .rqlp-laptop-view {
@@ -592,6 +714,36 @@ export default function LandingPage() {
             height: 300px;
           }
 
+          .rqlp-preview {
+            grid-template-columns: 1fr;
+          }
+
+          .rqlp-preview-sidebar {
+            border-right: none;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+            padding: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          }
+
+          .rqlp-preview-brand {
+            grid-column: span 2;
+            font-size: 16px;
+          }
+
+          .rqlp-preview-panel {
+            padding: 8px;
+          }
+
+          .rqlp-preview-panel p {
+            font-size: 11px;
+          }
+
+          .rqlp-preview-panel span {
+            font-size: 10px;
+          }
+
           .rqlp-browser {
             margin-top: 20px;
             border-radius: 12px;
@@ -729,6 +881,10 @@ export default function LandingPage() {
             height: 280px;
           }
 
+          .rqlp-laptop-view {
+            height: 280px;
+          }
+
           .rqlp-browser-top {
             height: 32px;
             padding: 0 12px;
@@ -800,8 +956,10 @@ export default function LandingPage() {
             font-size: clamp(13px, 2.8vw, 15px);
           }
 
-          .rqlp-laptop-view {
-            height: 260px;
+          .rqlp-preview-pin {
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
           }
 
           .rqlp-closing {
@@ -826,14 +984,14 @@ export default function LandingPage() {
       `}</style>
 
       <header className={`rqlp-nav${navScrolled ? " is-scrolled" : ""}`}>
-        <button className="rqlp-brand reveal" onClick={() => scrollToId("top")}>Route IQ</button>
+        <button className="rqlp-brand" onClick={() => scrollToId("top")}>Route IQ</button>
         <nav className="rqlp-links">
-          <button className="rqlp-link reveal" onClick={() => scrollToId("how-it-works")}>How it works</button>
-          <button className="rqlp-link reveal" onClick={() => scrollToId("algorithm")}>Algorithm</button>
-          <button className="rqlp-link reveal" onClick={() => scrollToId("demo")}>Demo</button>
+          <button className="rqlp-link" onClick={() => scrollToId("how-it-works")}>How it works</button>
+          <button className="rqlp-link" onClick={() => scrollToId("algorithm")}>Algorithm</button>
+          <button className="rqlp-link" onClick={() => scrollToId("demo")}>Demo</button>
         </nav>
-        <button className="rqlp-btn rqlp-btn-primary reveal" onClick={goToApp}>Launch App</button>
-        <button className="rqlp-menu-toggle reveal" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+        <button className="rqlp-btn rqlp-btn-primary" onClick={goToApp}>Launch App</button>
+        <button className="rqlp-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? "✕" : "☰"}
         </button>
       </header>
@@ -890,7 +1048,7 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <App />
+                <DemoPreview />
               </div>
             </div>
           </div>
@@ -968,7 +1126,7 @@ export default function LandingPage() {
                   <span className="rqlp-dot green" />
                 </div>
                 <div className="rqlp-laptop-view">
-                  <App />
+                  <DemoPreview compact />
                 </div>
               </div>
               <div className="rqlp-laptop-base" />
