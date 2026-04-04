@@ -104,7 +104,12 @@ export default function Sidebar({
   isMobileExpanded,
   onMobileToggle,
 }: Props) {
-  const [matrixVisible, setMatrixVisible] = useState(false);
+  const [isLocationPanelCollapsed, setIsLocationPanelCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.innerWidth <= 768;
+  });
   const [placeName, setPlaceName] = useState("");
   const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -123,34 +128,10 @@ export default function Sidebar({
     ? Number(((worstDeltaMinutes / result.worst_duration_minutes) * 100).toFixed(1))
     : 0;
   const routeHasIntersection = result ? hasSelfIntersection(result.optimized_route) : false;
-
-  useEffect(() => {
-    if (!result) {
-      setMatrixVisible(false);
-      return;
-    }
-
-    const matrixNode = document.querySelector<HTMLElement>(".matrix-wrap");
-    if (!matrixNode) return;
-
-    matrixNode.style.opacity = "0";
-    matrixNode.style.transform = "translateY(40px)";
-    matrixNode.classList.add("scroll-reveal-target");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          setMatrixVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(matrixNode);
-    return () => observer.disconnect();
-  }, [result]);
+  const matrixLocationNames = result?.matrix_location_names ?? [];
+  const durationMatrixSeconds = result?.duration_matrix_seconds ?? [];
+  const hasDistanceMatrix =
+    matrixLocationNames.length > 0 && durationMatrixSeconds.length === matrixLocationNames.length;
 
   useEffect(() => {
     const query = placeName.trim();
@@ -244,6 +225,10 @@ export default function Sidebar({
     setSuggestionError(null);
   }
 
+  function handleToggleLocationPanel() {
+    setIsLocationPanelCollapsed((prev) => !prev);
+  }
+
   async function handleAddSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selectedSuggestion || isGeocoding || atMax) return;
@@ -269,58 +254,82 @@ export default function Sidebar({
       </div>
 
       <div className="sidebar-body">
-        <form className="location-form" onSubmit={handleAddSubmit}>
-          <label className="sec-label" htmlFor="place-input">Add location</label>
-          <div className="location-form-row">
-            <input
-              id="place-input"
-              className="place-input"
-              type="text"
-              placeholder="Enter place name"
-              value={placeName}
-              onChange={(e) => {
-                setPlaceName(e.target.value);
-                setSelectedSuggestion(null);
-              }}
-              disabled={isGeocoding || atMax}
-              autoComplete="off"
-            />
+        <form className={`location-form${isLocationPanelCollapsed ? " is-collapsed" : ""}`} onSubmit={handleAddSubmit}>
+          <div className="location-form-header">
+            <label className="sec-label" htmlFor="place-input">Add location</label>
             <button
-              type="submit"
-              className="btn btn-neutral add-btn"
-              disabled={!selectedSuggestion || isGeocoding || atMax}
+              type="button"
+              className="location-collapse-btn"
+              onClick={handleToggleLocationPanel}
+              aria-expanded={!isLocationPanelCollapsed}
+              aria-controls="add-location-fields"
+              aria-label={isLocationPanelCollapsed ? "Expand add location section" : "Collapse add location section"}
             >
-              {isGeocoding ? "Adding..." : "Add location"}
+              <svg
+                className={`location-collapse-icon${isLocationPanelCollapsed ? " is-collapsed" : ""}`}
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path d="M6 14L12 8L18 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           </div>
-          {!atMax && placeName.trim().length >= 3 && (
-            <div className="autocomplete-wrap">
-              {isSearching && <div className="autocomplete-state">Searching...</div>}
-              {!isSearching && suggestionError && (
-                <div className="autocomplete-state is-error">{suggestionError}</div>
+          {!isLocationPanelCollapsed && (
+            <div id="add-location-fields" className="location-form-fields">
+              <div className="location-form-row">
+                <input
+                  id="place-input"
+                  className="place-input"
+                  type="text"
+                  placeholder="Enter place name"
+                  value={placeName}
+                  onChange={(e) => {
+                    setPlaceName(e.target.value);
+                    setSelectedSuggestion(null);
+                  }}
+                  disabled={isGeocoding || atMax}
+                  autoComplete="off"
+                />
+                <button
+                  type="submit"
+                  className="btn btn-neutral add-btn"
+                  disabled={!selectedSuggestion || isGeocoding || atMax}
+                >
+                  {isGeocoding ? "Adding..." : "Add location"}
+                </button>
+              </div>
+              {!atMax && placeName.trim().length >= 3 && (
+                <div className="autocomplete-wrap">
+                  {isSearching && <div className="autocomplete-state">Searching...</div>}
+                  {!isSearching && suggestionError && (
+                    <div className="autocomplete-state is-error">{suggestionError}</div>
+                  )}
+                  {!isSearching && !suggestionError && suggestions.length === 0 && !selectedSuggestion && (
+                    <div className="autocomplete-state">No suggestions found.</div>
+                  )}
+                  {!isSearching && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {suggestions.map((item, index) => (
+                        <li key={`${item.displayName}-${index}`}>
+                          <button
+                            type="button"
+                            className="suggestion-item"
+                            onClick={() => handleSelectSuggestion(item)}
+                          >
+                            <span className="suggestion-name">{item.name}</span>
+                            <span className="suggestion-detail">{item.displayName}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               )}
-              {!isSearching && !suggestionError && suggestions.length === 0 && !selectedSuggestion && (
-                <div className="autocomplete-state">No suggestions found.</div>
-              )}
-              {!isSearching && suggestions.length > 0 && (
-                <ul className="suggestions-list">
-                  {suggestions.map((item, index) => (
-                    <li key={`${item.displayName}-${index}`}>
-                      <button
-                        type="button"
-                        className="suggestion-item"
-                        onClick={() => handleSelectSuggestion(item)}
-                      >
-                        <span className="suggestion-name">{item.name}</span>
-                        <span className="suggestion-detail">{item.displayName}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <p className="field-help">First location is hub. Add up to four stops.</p>
             </div>
           )}
-          <p className="field-help">First location is hub. Add up to four stops.</p>
         </form>
 
         {atMax && !result && (
@@ -433,36 +442,40 @@ export default function Sidebar({
             </p>
 
             <div className="subsec">Travel time matrix (min)</div>
-            <div className={`matrix-wrap scroll-reveal-target${matrixVisible ? " scroll-reveal-in" : ""}`}>
-              <table className="matrix-table">
-                <thead>
-                  <tr>
-                    <th>From \ To</th>
-                    {result.matrix_location_names.map((name, idx) => (
-                      <th key={`head-${idx}`}>{name}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.matrix_location_names.map((rowName, rowIndex) => {
-                    const row = result.duration_matrix_seconds[rowIndex] ?? [];
-                    return (
-                    <tr key={`row-${rowIndex}`}>
-                      <th>{rowName}</th>
-                      {result.matrix_location_names.map((_, colIndex) => {
-                        const seconds = row[colIndex];
-                        return (
-                        <td key={`cell-${rowIndex}-${colIndex}`}>
-                          {typeof seconds === "number" ? (seconds / 60).toFixed(1) : "-"}
-                        </td>
-                        );
-                      })}
+            {hasDistanceMatrix ? (
+              <div className="matrix-wrap">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th>From \ To</th>
+                      {matrixLocationNames.map((name, idx) => (
+                        <th key={`head-${idx}`}>{name}</th>
+                      ))}
                     </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {matrixLocationNames.map((rowName, rowIndex) => {
+                      const row = durationMatrixSeconds[rowIndex] ?? [];
+                      return (
+                        <tr key={`row-${rowIndex}`}>
+                          <th>{rowName}</th>
+                          {matrixLocationNames.map((_, colIndex) => {
+                            const seconds = row[colIndex];
+                            return (
+                              <td key={`cell-${rowIndex}-${colIndex}`}>
+                                {typeof seconds === "number" ? (seconds / 60).toFixed(1) : "-"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="matrix-empty">Distance matrix data is unavailable for this run.</p>
+            )}
           </section>
         )}
 

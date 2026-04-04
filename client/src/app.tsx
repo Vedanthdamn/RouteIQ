@@ -40,11 +40,35 @@ export default function App() {
     setError(null);
     try {
       const optimized = await optimizeRoute(locations);
-      const legGeometries = await fetchRouteLegGeometries(optimized.optimized_route);
-      setResult({
-        ...optimized,
-        leg_geometries: legGeometries,
-      });
+      setResult(optimized);
+
+      if (
+        !Array.isArray(optimized.duration_matrix_seconds)
+        || !Array.isArray(optimized.matrix_location_names)
+      ) {
+        setError("Optimization succeeded, but distance matrix data is missing from the API response.");
+      }
+
+      try {
+        const legGeometries = await fetchRouteLegGeometries(optimized.optimized_route);
+        setResult((prev) => {
+          if (!prev) {
+            return {
+              ...optimized,
+              leg_geometries: legGeometries,
+            };
+          }
+          return {
+            ...prev,
+            leg_geometries: legGeometries,
+          };
+        });
+      } catch (routeErr) {
+        const routeMessage = routeErr instanceof Error
+          ? routeErr.message
+          : "Failed to fetch route geometry.";
+        setError(`Optimization succeeded, but map route geometry failed: ${routeMessage}`);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to connect to optimizer."

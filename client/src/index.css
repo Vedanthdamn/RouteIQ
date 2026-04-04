@@ -126,6 +126,48 @@ html {
   padding: 12px;
 }
 
+.location-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.location-form-header .sec-label {
+  margin-bottom: 0;
+}
+
+.location-form-fields {
+  margin-top: 8px;
+}
+
+.location-collapse-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.location-collapse-btn:hover {
+  background: #f9fafb;
+}
+
+.location-collapse-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.location-collapse-icon.is-collapsed {
+  transform: rotate(180deg);
+}
+
 .sec-label {
   display: block;
   font-size: 11px;
@@ -530,6 +572,15 @@ html {
 .matrix-table td {
   color: var(--text-2);
   font-variant-numeric: tabular-nums;
+}
+
+.matrix-empty {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text-3);
+  font-size: 12px;
+  padding: 10px;
 }
 
 .error-card {
