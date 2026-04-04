@@ -176,53 +176,15 @@ export default function Sidebar({
     };
   }, [placeName, atMax, selectedSuggestion]);
 
-  useEffect(() => {
-    const sidebarNode = document.querySelector<HTMLElement>(".sidebar");
-    if (!sidebarNode) return;
-
-    let startY = 0;
-    let currentY = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      currentY = e.touches[0].clientY - startY;
-    };
-
-    const handleTouchEnd = () => {
-      const threshold = 50;
-      if (currentY > threshold) {
-        // Dragged down, collapse
-        onMobileToggle(false);
-      } else if (currentY < -threshold) {
-        // Dragged up, expand
-        onMobileToggle(true);
-      }
-      startY = 0;
-      currentY = 0;
-    };
-
-    const header = sidebarNode.querySelector<HTMLElement>(".sidebar-header");
-    if (header && window.innerWidth <= 768) {
-      header.addEventListener("touchstart", handleTouchStart, { passive: true });
-      header.addEventListener("touchmove", handleTouchMove, { passive: true });
-      header.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-      return () => {
-        header.removeEventListener("touchstart", handleTouchStart);
-        header.removeEventListener("touchmove", handleTouchMove);
-        header.removeEventListener("touchend", handleTouchEnd);
-      };
-    }
-  }, [onMobileToggle]);
-
   function handleSelectSuggestion(suggestion: PlaceSuggestion) {
     setSelectedSuggestion(suggestion);
     setPlaceName(suggestion.displayName);
     setSuggestions([]);
     setSuggestionError(null);
+  }
+
+  function handleToggleMobileSidebar() {
+    onMobileToggle(!isMobileExpanded);
   }
 
   function handleToggleLocationPanel() {
@@ -243,7 +205,25 @@ export default function Sidebar({
 
   return (
     <aside className={`sidebar${isMobileExpanded ? " is-expanded" : ""}`}>
-      <div className="sidebar-header" onClick={() => window.innerWidth <= 768 && onMobileToggle(!isMobileExpanded)}>
+      <button
+        type="button"
+        className="sidebar-mobile-toggle"
+        onClick={handleToggleMobileSidebar}
+        aria-expanded={isMobileExpanded}
+        aria-label={isMobileExpanded ? "Hide sidebar" : "Show sidebar"}
+      >
+        <svg
+          className={`sidebar-mobile-toggle-icon${isMobileExpanded ? " is-expanded" : ""}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <div className="sidebar-header">
         <div className="header-logo">
           <span className="header-icon">🚚</span>
           <div>
