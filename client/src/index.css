@@ -50,6 +50,30 @@ html {
   min-height: 100vh;
 }
 
+.route-loading {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+}
+
+.route-loading-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #d1d5db;
+  border-top-color: #1f4ad7;
+  border-radius: 999px;
+  animation: route-loading-spin 0.75s linear infinite;
+}
+
+@keyframes route-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .app-container {
   display: flex;
   width: 100%;
@@ -80,6 +104,10 @@ html {
 .sidebar-header {
   padding: 20px;
   border-bottom: 1px solid var(--line);
+}
+
+.mobile-optimize-wrap {
+  display: none;
 }
 
 .header-logo {
@@ -1320,6 +1348,17 @@ body,
     border-bottom: 1px solid var(--line);
   }
 
+  .mobile-optimize-wrap {
+    display: block;
+    padding: 0 12px 10px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-sidebar);
+  }
+
+  .mobile-optimize-btn {
+    width: 100%;
+  }
+
   .header-logo {
     display: flex;
     align-items: center;
@@ -1348,6 +1387,10 @@ body,
 
   .btn-primary {
     width: 100%;
+  }
+
+  .footer-optimize-btn {
+    display: none;
   }
 
   .btn-neutral {
@@ -1485,6 +1528,10 @@ body,
   .sidebar-header {
     padding: 12px 16px;
     border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-optimize-wrap {
+    padding: 0 10px 8px;
   }
 
   .header-title {

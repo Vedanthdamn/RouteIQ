@@ -33,6 +33,26 @@ const apiBaseUrl = !runningOnLocalhost && (configuredPointsToLocalhost || config
   ? "/api"
   : configuredApiUrl;
 
+const renderHealthUrl = "https://routeiq.onrender.com/health";
+let backendWarmedUp = false;
+
+export function warmupBackend() {
+  if (backendWarmedUp) {
+    return;
+  }
+
+  backendWarmedUp = true;
+
+  // Fire-and-forget request to wake the free Render instance.
+  void fetch(renderHealthUrl, {
+    method: "GET",
+    mode: "no-cors",
+    cache: "no-store",
+  }).catch(() => {
+    // Ignore warmup failures; user actions should still proceed normally.
+  });
+}
+
 // ── IP geolocation (existing) ──────────────────────────────────────────────
 
 export interface LocationResponse {

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Map } from "@vis.gl/react-maplibre";
 import { middleOfUSA } from "./lib/constants";
 import Sidebar from "./components/sidebar";
 import RouteLayer from "./components/route-layer";
 import LocationMarkers from "./components/location-markers";
-import { fetchRouteLegGeometries, optimizeRoute } from "./lib/api";
+import { fetchRouteLegGeometries, optimizeRoute, warmupBackend } from "./lib/api";
 import type { LocationInput, OptimizeResponse, PlaceSuggestion } from "./lib/api";
 
 export default function App() {
@@ -14,6 +14,10 @@ export default function App() {
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
+
+  useEffect(() => {
+    warmupBackend();
+  }, []);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {
     if (result || isGeocoding || locations.length >= 5) return false;

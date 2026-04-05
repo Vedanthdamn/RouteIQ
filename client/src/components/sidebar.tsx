@@ -233,6 +233,19 @@ export default function Sidebar({
         </div>
       </div>
 
+      {!result && (
+        <div className="mobile-optimize-wrap">
+          <button
+            id="btn-optimize-mobile"
+            className="btn btn-primary mobile-optimize-btn"
+            onClick={onOptimize}
+            disabled={!canOptimize}
+          >
+            {isLoading ? "Optimizing..." : "Optimize route"}
+          </button>
+        </div>
+      )}
+
       <div className="sidebar-body">
         <form className={`location-form${isLocationPanelCollapsed ? " is-collapsed" : ""}`} onSubmit={handleAddSubmit}>
           <div className="location-form-header">
@@ -470,7 +483,7 @@ export default function Sidebar({
         {!result && (
           <button
             id="btn-optimize"
-            className="btn btn-primary"
+            className="btn btn-primary footer-optimize-btn"
             onClick={onOptimize}
             disabled={!canOptimize}
           >

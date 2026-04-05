@@ -229,6 +229,10 @@ export default function LandingPage() {
           color: #ddd6fe;
         }
 
+        .reveal {
+          will-change: transform, opacity;
+        }
+
         .rqlp-section {
           width: 100%;
           padding: 112px 32px 46px;
@@ -1131,6 +1135,7 @@ export default function LandingPage() {
               className="rqlp-demo-image reveal"
               src="/map-preview.png"
               alt="RouteIQ map preview"
+              loading="lazy"
             />
           </div>
         </section>
