@@ -1029,7 +1029,7 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <DemoPreview />
+                <img src="/map-preview.png" alt="RouteIQ map preview" style={{width:"100%", borderRadius:"12px", boxShadow:"0 8px 32px rgba(0,0,0,0.4)"}} />
               </div>
             </div>
           </div>
