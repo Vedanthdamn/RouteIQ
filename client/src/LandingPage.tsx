@@ -1,6 +1,34 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+function DemoPreview({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`rqlp-preview${compact ? " is-compact" : ""}`}>
+      <div className="rqlp-preview-sidebar">
+        <div className="rqlp-preview-brand">RouteIQ</div>
+        <div className="rqlp-preview-panel">
+          <p>Add location</p>
+          <span>Hub + 4 stops</span>
+        </div>
+        <div className="rqlp-preview-panel">
+          <p>Optimized route</p>
+          <span>42.6 min total</span>
+        </div>
+      </div>
+      <div className="rqlp-preview-map">
+        <div className="rqlp-preview-pin is-hub" style={{ left: "16%", top: "62%" }}>H</div>
+        <div className="rqlp-preview-pin" style={{ left: "36%", top: "38%" }}>1</div>
+        <div className="rqlp-preview-pin" style={{ left: "58%", top: "52%" }}>2</div>
+        <div className="rqlp-preview-pin" style={{ left: "74%", top: "32%" }}>3</div>
+        <div className="rqlp-preview-pin" style={{ left: "82%", top: "66%" }}>4</div>
+        <svg className="rqlp-preview-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M16 62 L36 38 L58 52 L74 32 L82 66 L16 62" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const [navScrolled, setNavScrolled] = useState(false);
@@ -1029,7 +1057,7 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <img src="/map-preview.png" alt="RouteIQ map preview" style={{width:"100%", borderRadius:"12px", boxShadow:"0 8px 32px rgba(0,0,0,0.4)"}} />
+                <DemoPreview />
               </div>
             </div>
           </div>
