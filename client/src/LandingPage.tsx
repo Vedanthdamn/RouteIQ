@@ -282,6 +282,23 @@ export default function LandingPage() {
           pointer-events: auto;
         }
 
+        .rqlp-live-app-embed > .app-root {
+          width: 100%;
+          height: 100%;
+          min-height: 600px;
+        }
+
+        .rqlp-live-app-embed > .app-root .app-container {
+          width: 100%;
+          height: 100%;
+          min-height: 600px;
+        }
+
+        .rqlp-live-app-embed > .app-root .map-wrapper {
+          width: 100%;
+          height: 100%;
+        }
+
         .rqlp-map-placeholder {
           height: 100%;
           width: 100%;
