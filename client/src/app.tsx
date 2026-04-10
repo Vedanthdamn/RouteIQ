@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Map } from "@vis.gl/react-maplibre";
 import { middleOfUSA } from "./lib/constants";
 import Sidebar from "./components/sidebar";
@@ -10,6 +10,7 @@ import type { LocationInput, OptimizeResponse, PlaceSuggestion } from "./lib/api
 type ThemeMode = "light" | "dark";
 
 export default function App() {
+  const hasResizedMapRef = useRef(false);
   const [locations, setLocations] = useState<LocationInput[]>([]);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,6 +135,14 @@ export default function App() {
             }}
             mapStyle="https://tiles.openfreemap.org/styles/liberty"
             style={{ width: "100%", height: "100%" }}
+            onLoad={(event) => {
+              if (hasResizedMapRef.current) return;
+              hasResizedMapRef.current = true;
+
+              window.requestAnimationFrame(() => {
+                event.target.resize();
+              });
+            }}
           >
             <LocationMarkers locations={locations} result={result} />
             {result && <RouteLayer legGeometries={result.leg_geometries ?? []} />}

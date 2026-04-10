@@ -265,18 +265,19 @@ export default function LandingPage() {
         .rqlp-dot.green { background: #22c55e; }
 
         .rqlp-browser-view {
-          height: 500px;
+          width: 100%;
+          height: 600px;
           background: #0f172a;
           overflow: hidden;
+          position: relative;
           margin: 0;
           padding: 0;
         }
 
         .rqlp-live-app-embed {
-          transform: scale(0.6);
-          transform-origin: top left;
           width: 100%;
-          height: 600px;
+          height: 100%;
+          min-height: 600px;
           overflow: hidden;
           pointer-events: auto;
         }
