@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import App from "./app";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -266,6 +267,15 @@ export default function LandingPage() {
         .rqlp-browser-view {
           height: 500px;
           background: #0f172a;
+        }
+
+        .rqlp-live-app-embed {
+          transform: scale(0.6);
+          transform-origin: top left;
+          width: 167%;
+          height: 167%;
+          overflow: hidden;
+          pointer-events: none;
         }
 
         .rqlp-map-placeholder {
@@ -1075,7 +1085,9 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <img src="/map-preview.png" alt="RouteIQ map preview" style={{width:"100%", borderRadius:"12px", boxShadow:"0 8px 32px rgba(0,0,0,0.4)"}} />
+                <div className="rqlp-live-app-embed" aria-hidden="true">
+                  <App />
+                </div>
               </div>
             </div>
           </div>
