@@ -9,6 +9,7 @@ export default function LandingPage() {
   const [statsMs, setStatsMs] = useState(0);
   const [statsGuarantee, setStatsGuarantee] = useState(0);
   const [algorithmCounter, setAlgorithmCounter] = useState(0);
+  const tickerText = "MATHEMATICALLY OPTIMAL • Every second on the road costs money • REAL ROAD ROUTING • Tested on Delhi Mumbai and Chennai • 24 ROUTES TESTED IN LESS THAN 1MS • Built with FastAPI and MapLibre • ZERO GUESSWORK • Brute force means guaranteed shortest path • TSP SOLVED IN REAL TIME • Free to use no signup required • OPEN SOURCE •";
 
   useEffect(() => {
     const onScroll = () => setNavScrolled(window.scrollY > 50);
@@ -564,6 +565,43 @@ export default function LandingPage() {
           color: #94a3b8;
           font-size: clamp(16px, 1.4vw, 20px);
           font-weight: 400;
+        }
+
+        .rqlp-ticker {
+          width: 100%;
+          background: #7c3aed;
+          overflow: hidden;
+          border-top: 1px solid rgba(255, 255, 255, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .rqlp-ticker-track {
+          width: max-content;
+          display: flex;
+          align-items: center;
+          animation: rqlp-ticker-scroll 30s linear infinite;
+        }
+
+        .rqlp-ticker-text {
+          display: inline-flex;
+          align-items: center;
+          white-space: nowrap;
+          padding: 12px 28px;
+          font-family: "Space Grotesk", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+        }
+
+        @keyframes rqlp-ticker-scroll {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-33.333%);
+          }
         }
 
         .rqlp-menu-toggle {
@@ -1124,8 +1162,16 @@ export default function LandingPage() {
         </section>
       </main>
 
+      <div className="rqlp-ticker" aria-label="RouteIQ highlights ticker">
+        <div className="rqlp-ticker-track">
+          <span className="rqlp-ticker-text">{tickerText}</span>
+          <span className="rqlp-ticker-text">{tickerText}</span>
+          <span className="rqlp-ticker-text">{tickerText}</span>
+        </div>
+      </div>
+
       <footer className="rqlp-footer reveal">
-        Built with FastAPI, React, MapLibre GL JS, OpenFreeMap, OpenRouteService
+        RouteIQ
       </footer>
     </div>
   );
