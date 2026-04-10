@@ -16,22 +16,26 @@ export default function LandingPage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     const revealElements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
 
-    revealElements.forEach((element, index) => {
+    revealElements.forEach((element) => {
       element.style.opacity = "0";
       element.style.transform = "translateY(30px)";
-      element.style.transition = "opacity 0.4s ease-out, transform 0.4s ease-out";
-      element.style.transitionDelay = `${Math.min(index, 8) * 50}ms`;
+      element.style.transition = "none";
     });
 
     const observer = new IntersectionObserver(
-      (entries, currentObserver) => {
+      (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
           const element = entry.target as HTMLElement;
-          element.style.opacity = "1";
-          element.style.transform = "translateY(0)";
-          currentObserver.unobserve(element);
+          if (entry.isIntersecting) {
+            element.style.transition = "opacity 0.4s ease-out, transform 0.4s ease-out";
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
+            return;
+          }
+
+          element.style.transition = "none";
+          element.style.opacity = "0";
+          element.style.transform = "translateY(30px)";
         });
       },
       {
@@ -49,25 +53,23 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      let frame = 0;
-      const totalFrames = 24;
-      const timer = window.setInterval(() => {
-        frame += 1;
-        const progress = Math.min(frame / totalFrames, 1);
-        setStatsRoutes(Math.round(24 * progress));
-        setStatsMs(Math.round(120 * progress));
-        setStatsGuarantee(Math.round(100 * progress));
-        setAlgorithmCounter(Math.round(24 * progress));
+    let frame = 0;
+    const totalFrames = 24;
+    const timer = window.setInterval(() => {
+      frame += 1;
+      const progress = Math.min(frame / totalFrames, 1);
+      setStatsRoutes(Math.round(24 * progress));
+      setStatsMs(Math.round(120 * progress));
+      setStatsGuarantee(Math.round(100 * progress));
+      setAlgorithmCounter(Math.round(24 * progress));
 
-        if (progress >= 1) {
-          window.clearInterval(timer);
-        }
-      }, 50);
-    }, 900);
+      if (progress >= 1) {
+        window.clearInterval(timer);
+      }
+    }, 50);
 
     return () => {
-      window.clearTimeout(timeoutId);
+      window.clearInterval(timer);
     };
   }, []);
 

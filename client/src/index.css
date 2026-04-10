@@ -44,17 +44,17 @@
 }
 
 .app-root.theme-dark {
-  --bg-page: #020617;
-  --bg-sidebar: #0f172a;
-  --bg-panel: #111827;
-  --bg-muted: #1e293b;
-  --bg-input: #0b1220;
-  --bg-hover: #1f2937;
-  --line: #334155;
-  --line-strong: #475569;
+  --bg-page: #000000;
+  --bg-sidebar: #000000;
+  --bg-panel: #111111;
+  --bg-muted: #111111;
+  --bg-input: #111111;
+  --bg-hover: #1a1a1a;
+  --line: #222222;
+  --line-strong: #222222;
   --text-1: #ffffff;
-  --text-2: #e2e8f0;
-  --text-3: #cbd5e1;
+  --text-2: #aaaaaa;
+  --text-3: #aaaaaa;
   --brand: #3b82f6;
   --warning-bg: #3f2b17;
   --warning-line: #9a6b2f;
@@ -62,11 +62,15 @@
   --error-bg: #3f1f24;
   --error-line: #7f1d1d;
   --error-text: #fecaca;
-  --table-head-bg: #1f2937;
-  --table-rowhead-bg: #172033;
-  --btn-neutral-bg: #0b1220;
-  --btn-neutral-hover: #1e293b;
-  --scrollbar-thumb: #475569;
+  --table-head-bg: #111111;
+  --table-rowhead-bg: #111111;
+  --btn-neutral-bg: #111111;
+  --btn-neutral-hover: #1a1a1a;
+  --scrollbar-thumb: #222222;
+}
+
+.app-root.theme-dark .map-wrapper {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 .app-root,
