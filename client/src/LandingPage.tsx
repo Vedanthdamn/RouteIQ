@@ -267,15 +267,16 @@ export default function LandingPage() {
         .rqlp-browser-view {
           height: 500px;
           background: #0f172a;
+          overflow: hidden;
         }
 
         .rqlp-live-app-embed {
           transform: scale(0.6);
           transform-origin: top left;
           width: 167%;
-          height: 167%;
+          height: 500px;
           overflow: hidden;
-          pointer-events: none;
+          pointer-events: auto;
         }
 
         .rqlp-map-placeholder {
@@ -1085,7 +1086,7 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <div className="rqlp-live-app-embed" aria-hidden="true">
+                <div className="rqlp-live-app-embed">
                   <App />
                 </div>
               </div>
