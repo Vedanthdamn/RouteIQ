@@ -268,13 +268,15 @@ export default function LandingPage() {
           height: 500px;
           background: #0f172a;
           overflow: hidden;
+          margin: 0;
+          padding: 0;
         }
 
         .rqlp-live-app-embed {
           transform: scale(0.6);
           transform-origin: top left;
-          width: 167%;
-          height: 500px;
+          width: 100%;
+          height: 600px;
           overflow: hidden;
           pointer-events: auto;
         }
