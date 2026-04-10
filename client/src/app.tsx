@@ -9,15 +9,23 @@ import type { LocationInput, OptimizeResponse, PlaceSuggestion } from "./lib/api
 
 type ThemeMode = "light" | "dark";
 
-export default function App() {
+interface AppProps {
+  embedded?: boolean;
+}
+
+export default function App({ embedded = false }: AppProps) {
   const hasResizedMapRef = useRef(false);
   const [locations, setLocations] = useState<LocationInput[]>([]);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
+  const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(() => false);
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    if (embedded) {
+      return "light";
+    }
+
     if (typeof window === "undefined") {
       return "light";
     }
@@ -31,9 +39,19 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (embedded) {
+      return;
+    }
+
     window.localStorage.setItem("routeiq-theme", themeMode);
     window.dispatchEvent(new CustomEvent<ThemeMode>("routeiq-theme-change", { detail: themeMode }));
-  }, [themeMode]);
+  }, [themeMode, embedded]);
+
+  useEffect(() => {
+    if (!embedded) return;
+    setThemeMode("light");
+    setIsMobileSidebarExpanded(false);
+  }, [embedded]);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {
     if (result || isGeocoding || locations.length >= 5) return false;
@@ -105,6 +123,7 @@ export default function App() {
   }
 
   function handleToggleTheme() {
+    if (embedded) return;
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   }
 
@@ -124,6 +143,8 @@ export default function App() {
           onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
           themeMode={themeMode}
           onToggleTheme={handleToggleTheme}
+          hideMobileToggle={embedded}
+          hideThemeToggle={embedded}
         />
 
         <div className="map-wrapper">
