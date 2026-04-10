@@ -200,26 +200,6 @@ export default function LandingPage() {
           justify-content: center;
           gap: 16px;
           padding-top: 56px;
-          background-image: url('/hero-bg.jpg');
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          position: relative;
-        }
-
-        .rqlp-hero-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.78);
-          z-index: 0;
-        }
-
-        .rqlp-hero > *:not(.rqlp-hero-overlay) {
-          position: relative;
-          z-index: 1;
         }
 
         .rqlp-kicker {
@@ -734,7 +714,6 @@ export default function LandingPage() {
             padding-top: 48px;
             gap: 12px;
             min-height: auto;
-            background-position: center;
           }
 
           .rqlp-title {
@@ -900,7 +879,6 @@ export default function LandingPage() {
           .rqlp-hero {
             padding-top: 40px;
             min-height: auto;
-            background-position: center;
           }
 
           .rqlp-title {
@@ -1080,7 +1058,6 @@ export default function LandingPage() {
       <main>
         <section className="rqlp-section">
           <div className="rqlp-section-inner rqlp-hero">
-            <div className="rqlp-hero-overlay" aria-hidden="true" />
             <p className="rqlp-kicker reveal">TSP Route Optimization Engine</p>
             <h1 className="rqlp-title reveal">Deliver smarter. Not harder.</h1>
             <p className="rqlp-subtext reveal">
