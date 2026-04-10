@@ -31,6 +31,7 @@ export default function App() {
 
   useEffect(() => {
     window.localStorage.setItem("routeiq-theme", themeMode);
+    window.dispatchEvent(new CustomEvent<ThemeMode>("routeiq-theme-change", { detail: themeMode }));
   }, [themeMode]);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {

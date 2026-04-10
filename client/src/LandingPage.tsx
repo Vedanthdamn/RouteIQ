@@ -23,19 +23,15 @@ export default function LandingPage() {
     });
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      (entries, currentObserver) => {
         entries.forEach((entry) => {
           const element = entry.target as HTMLElement;
-          if (entry.isIntersecting) {
-            element.style.transition = "opacity 0.4s ease-out, transform 0.4s ease-out";
-            element.style.opacity = "1";
-            element.style.transform = "translateY(0)";
-            return;
-          }
+          if (!entry.isIntersecting) return;
 
-          element.style.transition = "none";
-          element.style.opacity = "0";
-          element.style.transform = "translateY(30px)";
+          element.style.transition = "opacity 0.4s ease-out, transform 0.4s ease-out";
+          element.style.opacity = "1";
+          element.style.transform = "translateY(0)";
+          currentObserver.unobserve(element);
         });
       },
       {
