@@ -1,34 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function DemoPreview({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className={`rqlp-preview${compact ? " is-compact" : ""}`}>
-      <div className="rqlp-preview-sidebar">
-        <div className="rqlp-preview-brand">RouteIQ</div>
-        <div className="rqlp-preview-panel">
-          <p>Add location</p>
-          <span>Hub + 4 stops</span>
-        </div>
-        <div className="rqlp-preview-panel">
-          <p>Optimized route</p>
-          <span>42.6 min total</span>
-        </div>
-      </div>
-      <div className="rqlp-preview-map">
-        <div className="rqlp-preview-pin is-hub" style={{ left: "16%", top: "62%" }}>H</div>
-        <div className="rqlp-preview-pin" style={{ left: "36%", top: "38%" }}>1</div>
-        <div className="rqlp-preview-pin" style={{ left: "58%", top: "52%" }}>2</div>
-        <div className="rqlp-preview-pin" style={{ left: "74%", top: "32%" }}>3</div>
-        <div className="rqlp-preview-pin" style={{ left: "82%", top: "66%" }}>4</div>
-        <svg className="rqlp-preview-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M16 62 L36 38 L58 52 L74 32 L82 66 L16 62" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
 export default function LandingPage() {
   const navigate = useNavigate();
   const [navScrolled, setNavScrolled] = useState(false);
@@ -42,55 +14,37 @@ export default function LandingPage() {
     const onScroll = () => setNavScrolled(window.scrollY > 50);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    const revealElements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
 
-    const timeoutId = window.setTimeout(() => {
-      const revealElements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    revealElements.forEach((element, index) => {
+      element.style.opacity = "0";
+      element.style.transform = "translateY(30px)";
+      element.style.transition = "opacity 0.4s ease-out, transform 0.4s ease-out";
+      element.style.transitionDelay = `${Math.min(index, 8) * 50}ms`;
+    });
 
-      revealElements.forEach((element) => {
-        element.style.opacity = "0";
-        element.style.transform = "translateY(30px)";
-      });
+    const observer = new IntersectionObserver(
+      (entries, currentObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const element = entry.target as HTMLElement;
+          const element = entry.target as HTMLElement;
+          element.style.opacity = "1";
+          element.style.transform = "translateY(0)";
+          currentObserver.unobserve(element);
+        });
+      },
+      {
+        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.05,
+      }
+    );
 
-            if (entry.isIntersecting) {
-              const parent = element.parentElement;
-              const indexInParent = parent ? Array.from(parent.children).indexOf(element) : 0;
-              const delay = Math.max(indexInParent, 0) * 100;
-
-              element.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
-              element.style.transitionDelay = `${delay}ms`;
-              element.style.opacity = "1";
-              element.style.transform = "translateY(0)";
-              return;
-            }
-
-            element.style.transition = "none";
-            element.style.transitionDelay = "0ms";
-            element.style.opacity = "0";
-            element.style.transform = "translateY(30px)";
-          });
-        },
-        { threshold: 0.15 }
-      );
-
-      revealElements.forEach((element) => observer.observe(element));
-
-      (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver = observer;
-    }, 100);
+    revealElements.forEach((element) => observer.observe(element));
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.clearTimeout(timeoutId);
-
-      const observer = (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver;
-      if (observer) {
-        observer.disconnect();
-        delete (window as unknown as { __rqRevealObserver?: IntersectionObserver }).__rqRevealObserver;
-      }
+      observer.disconnect();
     };
   }, []);
 
@@ -229,10 +183,6 @@ export default function LandingPage() {
           color: #ddd6fe;
         }
 
-        .reveal {
-          will-change: transform, opacity;
-        }
-
         .rqlp-section {
           width: 100%;
           padding: 112px 32px 46px;
@@ -317,6 +267,34 @@ export default function LandingPage() {
         .rqlp-browser-view {
           height: 500px;
           background: #0f172a;
+        }
+
+        .rqlp-map-placeholder {
+          height: 100%;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background:
+            radial-gradient(circle at 22% 24%, rgba(56, 189, 248, 0.18), transparent 42%),
+            radial-gradient(circle at 78% 68%, rgba(124, 58, 237, 0.2), transparent 40%),
+            linear-gradient(140deg, #0b1126 0%, #0b1022 55%, #0a0f1e 100%);
+          color: #e5e7eb;
+        }
+
+        .rqlp-map-placeholder-title {
+          font-size: clamp(26px, 3.5vw, 40px);
+          font-weight: 700;
+          letter-spacing: -0.02em;
+        }
+
+        .rqlp-map-placeholder-sub {
+          font-size: clamp(12px, 1.4vw, 16px);
+          color: #94a3b8;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
         }
 
         .rqlp-preview {
@@ -1061,7 +1039,7 @@ export default function LandingPage() {
                 <span className="rqlp-dot green" />
               </div>
               <div className="rqlp-browser-view">
-                <DemoPreview />
+                <img src="/map-preview.png" alt="RouteIQ map preview" style={{width:"100%", borderRadius:"12px", boxShadow:"0 8px 32px rgba(0,0,0,0.4)"}} />
               </div>
             </div>
           </div>
@@ -1135,7 +1113,6 @@ export default function LandingPage() {
               className="rqlp-demo-image reveal"
               src="/map-preview.png"
               alt="RouteIQ map preview"
-              loading="lazy"
             />
           </div>
         </section>

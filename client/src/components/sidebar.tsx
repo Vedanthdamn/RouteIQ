@@ -82,6 +82,8 @@ interface Props {
   onReset: () => void;
   isMobileExpanded: boolean;
   onMobileToggle: (expanded: boolean) => void;
+  themeMode: "light" | "dark";
+  onToggleTheme: () => void;
 }
 
 const LEGEND_ITEMS = [
@@ -103,6 +105,8 @@ export default function Sidebar({
   onReset,
   isMobileExpanded,
   onMobileToggle,
+  themeMode,
+  onToggleTheme,
 }: Props) {
   const [isLocationPanelCollapsed, setIsLocationPanelCollapsed] = useState(() => {
     if (typeof window === "undefined") {
@@ -231,6 +235,25 @@ export default function Sidebar({
             <p className="header-sub">Hub + 4 Stops</p>
           </div>
         </div>
+        <button
+          type="button"
+          className="theme-toggle-btn"
+          onClick={onToggleTheme}
+          aria-label={themeMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={themeMode === "dark" ? "Light mode" : "Dark mode"}
+        >
+          {themeMode === "dark" ? (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M12 2.5V4.5M12 19.5V21.5M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2.5 12H4.5M19.5 12H21.5M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 14.5C19.2 14.8 18.35 14.95 17.5 14.95C13.39 14.95 10.05 11.61 10.05 7.5C10.05 6.65 10.2 5.8 10.5 5C7.02 5.93 4.5 9.11 4.5 12.8C4.5 17.24 8.1 20.85 12.55 20.85C16.24 20.85 19.42 18.33 20.35 14.85C20.24 14.74 20.12 14.62 20 14.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          <span>{themeMode === "dark" ? "Light" : "Dark"}</span>
+        </button>
       </div>
 
       {!result && (

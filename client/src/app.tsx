@@ -7,6 +7,8 @@ import LocationMarkers from "./components/location-markers";
 import { fetchRouteLegGeometries, optimizeRoute, warmupBackend } from "./lib/api";
 import type { LocationInput, OptimizeResponse, PlaceSuggestion } from "./lib/api";
 
+type ThemeMode = "light" | "dark";
+
 export default function App() {
   const [locations, setLocations] = useState<LocationInput[]>([]);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
@@ -14,10 +16,22 @@ export default function App() {
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    if (typeof window === "undefined") {
+      return "light";
+    }
+
+    const savedTheme = window.localStorage.getItem("routeiq-theme");
+    return savedTheme === "dark" ? "dark" : "light";
+  });
 
   useEffect(() => {
     warmupBackend();
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("routeiq-theme", themeMode);
+  }, [themeMode]);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {
     if (result || isGeocoding || locations.length >= 5) return false;
@@ -88,34 +102,42 @@ export default function App() {
     setError(null);
   }
 
-  return (
-    <div className="app-container">
-      <Sidebar
-        locations={locations}
-        result={result}
-        isLoading={isLoading}
-        isGeocoding={isGeocoding}
-        error={error}
-        onAddLocation={handleAddLocation}
-        onOptimize={handleOptimize}
-        onReset={handleReset}
-        isMobileExpanded={isMobileSidebarExpanded}
-        onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
-      />
+  function handleToggleTheme() {
+    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+  }
 
-      <div className="map-wrapper">
-        <Map
-          initialViewState={{
-            longitude: middleOfUSA[0],
-            latitude: middleOfUSA[1],
-            zoom: 2,
-          }}
-          mapStyle="https://tiles.openfreemap.org/styles/liberty"
-          style={{ width: "100%", height: "100%" }}
-        >
-          <LocationMarkers locations={locations} result={result} />
-          {result && <RouteLayer legGeometries={result.leg_geometries ?? []} />}
-        </Map>
+  return (
+    <div className={`app-root theme-${themeMode}`}>
+      <div className="app-container">
+        <Sidebar
+          locations={locations}
+          result={result}
+          isLoading={isLoading}
+          isGeocoding={isGeocoding}
+          error={error}
+          onAddLocation={handleAddLocation}
+          onOptimize={handleOptimize}
+          onReset={handleReset}
+          isMobileExpanded={isMobileSidebarExpanded}
+          onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
+          themeMode={themeMode}
+          onToggleTheme={handleToggleTheme}
+        />
+
+        <div className="map-wrapper">
+          <Map
+            initialViewState={{
+              longitude: middleOfUSA[0],
+              latitude: middleOfUSA[1],
+              zoom: 2,
+            }}
+            mapStyle="https://tiles.openfreemap.org/styles/liberty"
+            style={{ width: "100%", height: "100%" }}
+          >
+            <LocationMarkers locations={locations} result={result} />
+            {result && <RouteLayer legGeometries={result.leg_geometries ?? []} />}
+          </Map>
+        </div>
       </div>
     </div>
   );
