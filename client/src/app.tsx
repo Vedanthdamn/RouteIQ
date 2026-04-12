@@ -10,22 +10,25 @@ import type { LocationInput, OptimizeResponse, PlaceSuggestion } from "./lib/api
 type ThemeMode = "light" | "dark";
 
 interface AppProps {
-  embedded?: boolean;
+  isEmbeddedPreview?: boolean;
 }
 
-export default function App({ embedded = false }: AppProps) {
+export default function App({ isEmbeddedPreview = false }: AppProps) {
   const hasResizedMapRef = useRef(false);
+  const resizeTimeoutRef = useRef<number | null>(null);
   const [locations, setLocations] = useState<LocationInput[]>([]);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(() => false);
-  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (embedded) {
-      return "light";
+  const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
+  const [isEmbeddedMobile, setIsEmbeddedMobile] = useState(() => {
+    if (!isEmbeddedPreview || typeof window === "undefined") {
+      return false;
     }
-
+    return window.matchMedia("(max-width: 768px)").matches;
+  });
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     if (typeof window === "undefined") {
       return "light";
     }
@@ -39,19 +42,32 @@ export default function App({ embedded = false }: AppProps) {
   }, []);
 
   useEffect(() => {
-    if (embedded) {
+    window.localStorage.setItem("routeiq-theme", themeMode);
+    window.dispatchEvent(new CustomEvent<ThemeMode>("routeiq-theme-change", { detail: themeMode }));
+  }, [themeMode]);
+
+  useEffect(() => {
+    if (!isEmbeddedPreview) {
       return;
     }
 
-    window.localStorage.setItem("routeiq-theme", themeMode);
-    window.dispatchEvent(new CustomEvent<ThemeMode>("routeiq-theme-change", { detail: themeMode }));
-  }, [themeMode, embedded]);
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsEmbeddedMobile(mediaQuery.matches);
+    update();
+
+    mediaQuery.addEventListener("change", update);
+    return () => {
+      mediaQuery.removeEventListener("change", update);
+    };
+  }, [isEmbeddedPreview]);
 
   useEffect(() => {
-    if (!embedded) return;
-    setThemeMode("light");
-    setIsMobileSidebarExpanded(false);
-  }, [embedded]);
+    return () => {
+      if (resizeTimeoutRef.current !== null) {
+        window.clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   async function handleAddLocation(place: PlaceSuggestion): Promise<boolean> {
     if (result || isGeocoding || locations.length >= 5) return false;
@@ -123,29 +139,28 @@ export default function App({ embedded = false }: AppProps) {
   }
 
   function handleToggleTheme() {
-    if (embedded) return;
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   }
 
   return (
     <div className={`app-root theme-${themeMode}`}>
       <div className="app-container">
-        <Sidebar
-          locations={locations}
-          result={result}
-          isLoading={isLoading}
-          isGeocoding={isGeocoding}
-          error={error}
-          onAddLocation={handleAddLocation}
-          onOptimize={handleOptimize}
-          onReset={handleReset}
-          isMobileExpanded={isMobileSidebarExpanded}
-          onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
-          themeMode={themeMode}
-          onToggleTheme={handleToggleTheme}
-          hideMobileToggle={embedded}
-          hideThemeToggle={embedded}
-        />
+        {!(isEmbeddedPreview && isEmbeddedMobile) && (
+          <Sidebar
+            locations={locations}
+            result={result}
+            isLoading={isLoading}
+            isGeocoding={isGeocoding}
+            error={error}
+            onAddLocation={handleAddLocation}
+            onOptimize={handleOptimize}
+            onReset={handleReset}
+            isMobileExpanded={isMobileSidebarExpanded}
+            onMobileToggle={(expanded) => setIsMobileSidebarExpanded(expanded)}
+            themeMode={themeMode}
+            onToggleTheme={handleToggleTheme}
+          />
+        )}
 
         <div className="map-wrapper">
           <Map
@@ -159,6 +174,13 @@ export default function App({ embedded = false }: AppProps) {
             onLoad={(event) => {
               if (hasResizedMapRef.current) return;
               hasResizedMapRef.current = true;
+
+              if (isEmbeddedPreview) {
+                resizeTimeoutRef.current = window.setTimeout(() => {
+                  event.target.resize();
+                }, 500);
+                return;
+              }
 
               window.requestAnimationFrame(() => {
                 event.target.resize();

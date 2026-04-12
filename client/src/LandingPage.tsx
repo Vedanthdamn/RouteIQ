@@ -282,10 +282,6 @@ export default function LandingPage() {
           pointer-events: auto;
         }
 
-        .rqlp-mobile-hero-static {
-          display: none;
-        }
-
         .rqlp-live-app-embed > .app-root {
           width: 100%;
           height: 100%;
@@ -771,25 +767,12 @@ export default function LandingPage() {
             font-size: 14px;
           }
 
-          .rqlp-browser-view,
+          .rqlp-browser-view {
+            height: 480px;
+          }
+
           .rqlp-laptop-view {
-            width: 100%;
-            height: 500px;
-            overflow: hidden;
-            border-radius: 12px;
-          }
-
-          .rqlp-live-app-embed {
-            display: none;
-          }
-
-          .rqlp-mobile-hero-static {
-            display: block;
-          }
-
-          .rqlp-live-app-embed .sidebar,
-          .rqlp-live-app-embed .sidebar.is-expanded {
-            transform: translateX(-100%) !important;
+            height: 300px;
           }
 
           .rqlp-preview {
@@ -956,10 +939,7 @@ export default function LandingPage() {
           }
 
           .rqlp-browser-view {
-            width: 100%;
-            height: 500px;
-            overflow: hidden;
-            border-radius: 12px;
+            height: 480px;
           }
 
           .rqlp-laptop-view {
@@ -1130,9 +1110,8 @@ export default function LandingPage() {
               </div>
               <div className="rqlp-browser-view">
                 <div className="rqlp-live-app-embed">
-                  <App embedded />
+                  <App isEmbeddedPreview />
                 </div>
-                <img className="rqlp-mobile-hero-static" src="/map-preview.png" alt="RouteIQ map preview" style={{width:"100%", borderRadius:"12px"}} />
               </div>
             </div>
           </div>
